@@ -1,8 +1,8 @@
-// server.js - Versão FINAL Multiplataforma
+// server.js - Versão FINAL Multiplataforma para Render
 const express = require('express');
 const cors = require('cors');
 const { spawn } = require('child_process');
-const fs = require('fs'); // Módulo para verificar se arquivos existem
+const fs = require('fs');
 
 const app = express();
 const port = 3000;
@@ -19,7 +19,7 @@ app.get('/download', async (req, res) => {
     console.log(`Iniciando download para: ${videoUrl}`);
 
     try {
-        // --- LÓGICA INTELIGENTE PARA SELECIONAR COOKIES ---
+        // Lógica inteligente para selecionar o cookie correto
         const isYouTube = videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be');
         const isInstagram = videoUrl.includes('instagram.com');
 
@@ -29,16 +29,14 @@ app.get('/download', async (req, res) => {
         } else if (isInstagram) {
             cookieFile = 'instagram_cookies.txt';
         }
-        // --------------------------------------------------
 
         const titleArgs = ['--get-title', videoUrl];
 
-        // Adiciona o argumento de cookie somente se o arquivo apropriado existir
         if (cookieFile && fs.existsSync(cookieFile)) {
             console.log(`Usando o arquivo de cookies: ${cookieFile}`);
             titleArgs.push('--cookies', cookieFile);
         } else if (cookieFile) {
-            console.warn(`AVISO: A URL parece ser do ${isInstagram ? 'Instagram' : 'YouTube'}, mas o arquivo ${cookieFile} não foi encontrado.`);
+            console.warn(`AVISO: A URL parece ser de uma plataforma que precisa de cookies, mas o arquivo ${cookieFile} não foi encontrado.`);
         }
 
         const infoProcess = spawn('yt-dlp', titleArgs);
@@ -65,7 +63,7 @@ app.get('/download', async (req, res) => {
         ];
 
         if (cookieFile && fs.existsSync(cookieFile)) {
-            downloadArgs.splice(2, 0, '--cookies', cookieFile); // Insere os cookies na posição correta
+            downloadArgs.splice(2, 0, '--cookies', cookieFile);
         }
 
         const ytdlpProcess = spawn('yt-dlp', downloadArgs);
@@ -80,13 +78,6 @@ app.get('/download', async (req, res) => {
             console.log(`Processo finalizado com código ${code}`);
             if (!res.writableEnded) {
                 res.end();
-            }
-        });
-
-        ytdlpProcess.on('error', (err) => {
-            console.error(`[ERRO NO SPAWN] Falha ao iniciar o processo: ${err.message}`);
-            if (!res.headersSent) {
-                res.status(500).send({ error: 'Falha ao iniciar o processo de download.' });
             }
         });
 

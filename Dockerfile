@@ -17,8 +17,9 @@ WORKDIR /usr/src/app
 # Copia os arquivos de dependência
 COPY package*.json ./
 
-# Copia o arquivo de cookies
+# Copia os arquivos de cookies
 COPY cookies.txt ./
+COPY instagram_cookies.txt ./  # <== ADICIONE ESTA LINHA
 
 # Instala as dependências do Node.js
 RUN npm install
