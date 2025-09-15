@@ -1,11 +1,15 @@
 # Use uma imagem oficial do Node.js como base
 FROM node:18-slim
 
-# Instala TODAS as nossas dependências
+# Instala ffmpeg e as ferramentas necessárias para baixar o yt-dlp (curl)
 RUN apt-get update && apt-get install -y \
     ffmpeg \
-    yt-dlp \
+    curl \
     && rm -rf /var/lib/apt/lists/*
+
+# Baixa a versão mais recente do yt-dlp direto do GitHub e a torna executável
+RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp \
+    && chmod a+rx /usr/local/bin/yt-dlp
 
 # Define o diretório de trabalho
 WORKDIR /usr/src/app
@@ -13,7 +17,6 @@ WORKDIR /usr/src/app
 # Copia os arquivos de dependência
 COPY package*.json ./
 
-# ==> NOVA LINHA AQUI <==
 # Copia o arquivo de cookies
 COPY cookies.txt ./
 
