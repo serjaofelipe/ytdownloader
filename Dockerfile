@@ -1,12 +1,18 @@
 # Use uma imagem oficial do Node.js como base
 FROM node:18-slim
 
-# Instala o FFmpeg e outras dependências necessárias (AGORA COM PYTHON)
+# Instala o FFmpeg, Python e Git
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     python3 \
-    # Limpa o cache para manter a imagem pequena
+    git \
     && rm -rf /var/lib/apt/lists/*
+
+# Cria um "apelido" para que o comando "python" aponte para "python3"
+RUN ln -s /usr/bin/python3 /usr/bin/python
+
+# Instala o yt-dlp globalmente usando a versão mais recente
+RUN npm i -g yt-dlp
 
 # Define o diretório de trabalho dentro do contêiner
 WORKDIR /usr/src/app
