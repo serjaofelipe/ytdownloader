@@ -1,7 +1,7 @@
 # Use uma imagem oficial do Node.js como base
 FROM node:18-slim
 
-# Instala TODAS as nossas dependências (ffmpeg e yt-dlp) com um único comando
+# Instala as únicas duas dependências de sistema que precisamos: ffmpeg e yt-dlp
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     yt-dlp \
@@ -13,7 +13,7 @@ WORKDIR /usr/src/app
 # Copia os arquivos de dependência
 COPY package*.json ./
 
-# Instala as dependências do Node.js
+# Instala APENAS as dependências do Node.js (agora sem o problemático yt-dlp-exec)
 RUN npm install
 
 # Copia o resto dos arquivos da sua aplicação
