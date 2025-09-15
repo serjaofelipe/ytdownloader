@@ -1,9 +1,10 @@
 # Use uma imagem oficial do Node.js como base
 FROM node:18-slim
 
-# Instala o FFmpeg e outras dependências necessárias
+# Instala o FFmpeg e outras dependências necessárias (AGORA COM PYTHON)
 RUN apt-get update && apt-get install -y \
     ffmpeg \
+    python3 \
     # Limpa o cache para manter a imagem pequena
     && rm -rf /var/lib/apt/lists/*
 
