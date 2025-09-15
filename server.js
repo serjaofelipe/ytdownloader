@@ -1,4 +1,4 @@
-// server.js - Versão FINAL com Codec Compatível (H.264)
+// server.js - Versão FINAL com Captura de Título Corrigida
 const express = require('express');
 const cors = require('cors');
 const { spawn } = require('child_process');
@@ -19,23 +19,27 @@ app.get('/download', async (req, res) => {
 
     try {
         const infoProcess = spawn('yt-dlp', ['--get-title', videoUrl, '--cookies', 'cookies.txt']);
-        let videoTitle = 'video';
 
+        // --- A CORREÇÃO ESTÁ AQUI ---
+        // Junta todos os "pedaços" do título antes de processar
+        const titleChunks = [];
         for await (const chunk of infoProcess.stdout) {
-            videoTitle = chunk.toString().trim().replace(/[<>:"/\\|?*]/g, '_');
+            titleChunks.push(chunk);
         }
+        const rawTitle = Buffer.concat(titleChunks).toString().trim();
 
-        res.header('Content-Disposition', `attachment; filename="${videoTitle}.mp4"`);
+        // Limpa (sanitiza) o título completo para ser um nome de arquivo seguro
+        const sanitizedTitle = rawTitle.replace(/[<>:"/\\|?*]/g, '_').replace(/[^\x20-\x7E]/g, '');
+        // -----------------------------
+
+        res.header('Content-Disposition', `attachment; filename="${sanitizedTitle || 'video'}.mp4"`);
 
         const ytdlpProcess = spawn('yt-dlp', [
             videoUrl,
             '--no-playlist',
             '--cookies', 'cookies.txt',
             '--merge-output-format', 'mp4',
-            // --- A MUDANÇA FINAL E CORRETA ESTÁ AQUI ---
-            // Pede o melhor vídeo com codec H.264 (avc) + o melhor áudio
             '-f', 'bestvideo[vcodec^=avc][ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]',
-            // ------------------------------------------
             '-o', '-',
         ]);
 
