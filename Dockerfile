@@ -1,26 +1,30 @@
 # Use uma imagem oficial do Node.js como base
 FROM node:18-slim
 
-# Instala as únicas duas dependências de sistema que precisamos: ffmpeg e yt-dlp
+# Instala TODAS as nossas dependências
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     yt-dlp \
     && rm -rf /var/lib/apt/lists/*
 
-# Define o diretório de trabalho dentro do contêiner
+# Define o diretório de trabalho
 WORKDIR /usr/src/app
 
 # Copia os arquivos de dependência
 COPY package*.json ./
 
-# Instala APENAS as dependências do Node.js (agora sem o problemático yt-dlp-exec)
+# ==> NOVA LINHA AQUI <==
+# Copia o arquivo de cookies
+COPY cookies.txt ./
+
+# Instala as dependências do Node.js
 RUN npm install
 
-# Copia o resto dos arquivos da sua aplicação
+# Copia o resto dos arquivos
 COPY . .
 
-# Expõe a porta que sua aplicação usa
+# Expõe a porta
 EXPOSE 3000
 
-# O comando para iniciar sua aplicação
+# O comando para iniciar
 CMD [ "node", "server.js" ]

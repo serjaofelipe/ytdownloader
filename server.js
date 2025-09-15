@@ -1,7 +1,7 @@
-// server.js - Versão FINAL para Docker
+// server.js - Versão final com Cookies
 const express = require('express');
 const cors = require('cors');
-const { spawn } = require('child_process'); // Módulo nativo do Node.js para rodar comandos
+const { spawn } = require('child_process');
 
 const app = express();
 const port = 3000;
@@ -18,30 +18,27 @@ app.get('/download', async (req, res) => {
     console.log(`Iniciando download para: ${videoUrl}`);
 
     try {
-        // Pega as informações do vídeo (como o título) usando yt-dlp
-        const infoProcess = spawn('yt-dlp', ['--get-title', videoUrl]);
-        let videoTitle = 'video'; // Título padrão
+        // Pega o título do vídeo
+        const infoProcess = spawn('yt-dlp', ['--get-title', videoUrl, '--cookies', 'cookies.txt']); // <== Adicionado aqui
+        let videoTitle = 'video';
 
-        // 'await' para o processo terminar e pegarmos o título
         for await (const chunk of infoProcess.stdout) {
             videoTitle = chunk.toString().trim().replace(/[<>:"/\\|?*]/g, '_');
         }
 
-        // Configura o cabeçalho para o download com o título correto
         res.header('Content-Disposition', `attachment; filename="${videoTitle}.mp4"`);
 
-        // Inicia o processo de download do vídeo
+        // Inicia o download
         const ytdlpProcess = spawn('yt-dlp', [
             videoUrl,
             '--no-playlist',
+            '--cookies', 'cookies.txt', // <== E adicionado aqui
             '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
             '-o', '-',
         ]);
 
-        // Envia o fluxo do vídeo diretamente para o navegador
         ytdlpProcess.stdout.pipe(res);
 
-        // Monitora por erros
         ytdlpProcess.stderr.on('data', (data) => {
             console.error(`Log do yt-dlp: ${data}`);
         });
@@ -61,7 +58,6 @@ app.get('/download', async (req, res) => {
     }
 });
 
-// A Render usa a variável de ambiente PORT. Se não estiver definida, usamos 3000.
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor FINAL rodando na porta ${PORT}`);
