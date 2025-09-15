@@ -31,8 +31,8 @@ app.get('/download', async (req, res) => {
             videoUrl,
             '--no-playlist',
             '--cookies', 'cookies.txt',
-            '--merge-output-format', 'mp4', // <== A SOLUÇÃO ESTÁ AQUI
-            '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
+            '--merge-output-format', 'mp4', // <== A CORREÇÃO CRUCIAL ESTÁ AQUI
+            '-f', 'bestvideo+bestaudio/best',
             '-o', '-',
         ]);
 
