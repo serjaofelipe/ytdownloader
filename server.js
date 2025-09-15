@@ -1,4 +1,4 @@
-// server.js - Versão FINAL com formato de saída corrigido
+// server.js - Versão FINAL com Codec Compatível (H.264)
 const express = require('express');
 const cors = require('cors');
 const { spawn } = require('child_process');
@@ -31,8 +31,11 @@ app.get('/download', async (req, res) => {
             videoUrl,
             '--no-playlist',
             '--cookies', 'cookies.txt',
-            '--merge-output-format', 'mp4', // <== A CORREÇÃO CRUCIAL ESTÁ AQUI
-            '-f', 'bestvideo+bestaudio/best',
+            '--merge-output-format', 'mp4',
+            // --- A MUDANÇA FINAL E CORRETA ESTÁ AQUI ---
+            // Pede o melhor vídeo com codec H.264 (avc) + o melhor áudio
+            '-f', 'bestvideo[vcodec^=avc][ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]',
+            // ------------------------------------------
             '-o', '-',
         ]);
 
