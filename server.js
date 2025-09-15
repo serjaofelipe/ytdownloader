@@ -1,4 +1,4 @@
-// server.js - Versão final com Cookies
+// server.js - Versão FINAL com formato de saída corrigido
 const express = require('express');
 const cors = require('cors');
 const { spawn } = require('child_process');
@@ -18,8 +18,7 @@ app.get('/download', async (req, res) => {
     console.log(`Iniciando download para: ${videoUrl}`);
 
     try {
-        // Pega o título do vídeo
-        const infoProcess = spawn('yt-dlp', ['--get-title', videoUrl, '--cookies', 'cookies.txt']); // <== Adicionado aqui
+        const infoProcess = spawn('yt-dlp', ['--get-title', videoUrl, '--cookies', 'cookies.txt']);
         let videoTitle = 'video';
 
         for await (const chunk of infoProcess.stdout) {
@@ -28,11 +27,11 @@ app.get('/download', async (req, res) => {
 
         res.header('Content-Disposition', `attachment; filename="${videoTitle}.mp4"`);
 
-        // Inicia o download
         const ytdlpProcess = spawn('yt-dlp', [
             videoUrl,
             '--no-playlist',
-            '--cookies', 'cookies.txt', // <== E adicionado aqui
+            '--cookies', 'cookies.txt',
+            '--merge-output-format', 'mp4', // <== A SOLUÇÃO ESTÁ AQUI
             '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
             '-o', '-',
         ]);
