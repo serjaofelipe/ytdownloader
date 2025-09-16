@@ -19,7 +19,7 @@ COPY package*.json ./
 
 # Copia os arquivos de cookies
 COPY cookies.txt ./
-COPY instagram_cookies.txt ./  # <== ADICIONE ESTA LINHA
+COPY instagram_cookies.txt ./
 
 # Instala as dependências do Node.js
 RUN npm install
